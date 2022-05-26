@@ -1,0 +1,452 @@
+﻿<Window x:Class="AccountingOfWorksInConstructionOrganization.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:AccountingOfWorksInConstructionOrganization.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
+        mc:Ignorable="d"
+        Title="MainWindow" MinHeight="600" MinWidth="1100"
+        WindowStartupLocation="CenterScreen"
+        Background="#292B2C">
+
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="30 10"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style TargetType="DatePicker">
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="30 10"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="30 10"/>
+        </Style>
+        
+        <Style TargetType="ComboBox">
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="30 10"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="SFNS Display"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#323537"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#292B2C"/>
+        </Style>
+
+        <Style TargetType="Menu">
+            <Setter Property="Background" Value="#292B2C"/>
+        </Style>
+
+        <Style TargetType="MenuItem">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="10 6"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style TargetType="TabItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid Name="Panel">
+                            <ContentPresenter x:Name="ContentSite"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    ContentSource="Header"
+                                    Margin="10,2"/>
+                        </Grid>
+                        
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Panel" Property="Background" Value="Gray"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Panel" Property="Background" Value="#292B2C"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="HeaderTemplate">
+            <TextBlock Text="{Binding}" TextWrapping="Wrap"  TextAlignment="Center"/>
+        </DataTemplate>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0.5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="ContentTemplate" Value="{StaticResource HeaderTemplate}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="BorderThickness" Value="0.1"/>
+            <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="0.1"/>
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="#292B2C"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <TabControl TabStripPlacement="Left">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Заказы"/>
+                </TabItem.Header>
+
+                <TabControl TabStripPlacement="Bottom">
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Таблица"/>
+                        </TabItem.Header>
+
+                        <TabItem.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Удалить" Command="{Binding DeleteOrder}"/>
+                            </ContextMenu>
+                        </TabItem.ContextMenu>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="11*"/>
+                            </Grid.RowDefinitions>
+
+                            <Menu FontSize="14">
+                                <MenuItem Header="Все заказы" Command="{Binding ShowAllOrders}"/>
+                                <MenuItem Header="Закрытые заказы" Command="{Binding ShowClosedOrders}"/>
+                                <MenuItem Header="Незакрытые заказы" Command="{Binding ShowNotClosedOrders}"/>
+                            </Menu>
+
+                            <DataGrid ItemsSource="{Binding AllOrders, UpdateSourceTrigger=PropertyChanged}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  SelectedItem="{Binding SelectedOrder}"
+                                  Grid.Row="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                                    <DataGridTextColumn Header="Номер клиента" Binding="{Binding ClientId}" Width="1*"/>
+                                    <DataGridTextColumn Header="Номер услуги" Binding="{Binding ServiceId}" Width="1*"/>
+                                    <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat= d}" Width="2*"/>
+                                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="2*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Добавление"/>
+                        </TabItem.Header>
+
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="20 10">
+                                    <TextBlock Text="Номер клиента: "/>
+                                    <ComboBox ItemsSource="{Binding AllClients}"
+                                          SelectedValue="{Binding Order.ClientId}"
+                                          SelectedValuePath="Id"
+                                          DisplayMemberPath="Id"
+                                          IsEditable="True"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="20 10">
+                                    <TextBlock Text="Номер услуги: "/>
+                                    <ComboBox ItemsSource="{Binding AllServices}"
+                                          SelectedValue="{Binding Order.ServiceId}"
+                                          SelectedValuePath="Id"
+                                          DisplayMemberPath="Id"
+                                          IsEditable="True"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="20 10">
+                                    <TextBlock Text="Дата: "/>
+                                    <DatePicker SelectedDate="{Binding Order.Date}"
+                                        IsTodayHighlighted="True"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="20 10">
+                                    <TextBlock Text="Статус: "/>
+                                    <ComboBox MinWidth="130"
+                                    SelectedValuePath="Content"
+                                    SelectedValue="{Binding Order.Status}">
+                                        <ComboBoxItem Content="Закрытый"/>
+                                        <ComboBoxItem Content="Незакрытый"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Button Content="Добавить" Height="60" Command="{Binding AddNewOrder}"
+                                        Margin="30"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Клиенты"/>
+                </TabItem.Header>
+
+                <TabControl TabStripPlacement="Bottom">
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Таблица"/>
+                        </TabItem.Header>
+
+                        <TabItem.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Удалить" Command="{Binding DeleteClient}"/>
+                            </ContextMenu>
+                        </TabItem.ContextMenu>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="11*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Поиск клиента по ФИО: " VerticalAlignment="Center" Margin="30 10 0 10"/>
+                                <TextBox VerticalAlignment="Center" MinWidth="400" Margin="10 10"
+                                Text="{Binding FindClient, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <DataGrid ItemsSource="{Binding AllClients, UpdateSourceTrigger=PropertyChanged}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  SelectedItem="{Binding SelectedClient}"
+                                  Grid.Row="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                                    <DataGridTextColumn Header="ФИО" Binding="{Binding Name}" Width="3*"/>
+                                    <DataGridTextColumn Header="Номер телефона" Binding="{Binding Phone}" Width="2*"/>
+                                    <DataGridTextColumn Header="Паспорт" Binding="{Binding Passport}" Width="2*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Добавление"/>
+                        </TabItem.Header>
+
+                        <StackPanel>
+                            <StackPanel Orientation="Vertical" Margin="60 10 60 0">
+                                <TextBlock Text="ФИО: "/>
+                                <TextBox Text="{Binding Client.Name}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <TextBlock Text="Номер телефона: "/>
+                                    <TextBox Text="{Binding Client.Phone}" MinWidth="130"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <TextBlock Text="Паспорт: "/>
+                                    <TextBox Text="{Binding Client.Passport}" MinWidth="130"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Button Content="Добавить" Height="60" Command="{Binding AddNewClient}"
+                                        Margin="30"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Сотрудники"/>
+                </TabItem.Header>
+
+                <TabControl TabStripPlacement="Bottom">
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Таблица"/>
+                        </TabItem.Header>
+
+                        <TabItem.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Удалить" Command="{Binding DeleteEmployee}"/>
+                            </ContextMenu>
+                        </TabItem.ContextMenu>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="11*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Поиск сотрудника по ФИО: " VerticalAlignment="Center" Margin="30 10 0 10"/>
+                                <TextBox VerticalAlignment="Center" MinWidth="400" Margin="10 10"
+                                Text="{Binding FindEmployee, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <DataGrid ItemsSource="{Binding AllEmployees, UpdateSourceTrigger=PropertyChanged}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  SelectedItem="{Binding SelectedEmployee}"
+                                  Grid.Row="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                                    <DataGridTextColumn Header="ФИО" Binding="{Binding Name}" Width="2*"/>
+                                    <DataGridTextColumn Header="Номер телефона" Binding="{Binding Phone}" Width="2*"/>
+                                    <DataGridTextColumn Header="Паспорт" Binding="{Binding Passport}" Width="2*"/>
+                                    <DataGridTextColumn Header="День рождения" Binding="{Binding DateOfBirth, StringFormat= d}" Width="2*"/>
+                                    <DataGridTextColumn Header="Адрес" Binding="{Binding Address}" Width="2*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Добавление"/>
+                        </TabItem.Header>
+
+                        <StackPanel>
+                            <StackPanel Orientation="Vertical" Margin="60 10 60 10">
+                                <TextBlock Text="ФИО: "/>
+                                <TextBox Text="{Binding Employee.Name}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <TextBlock Text="Номер телефона: "/>
+                                    <TextBox Text="{Binding Employee.Phone}" MinWidth="130"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <TextBlock Text="Паспорт: "/>
+                                    <TextBox Text="{Binding Employee.Passport}" MinWidth="130"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="20 10">
+                                    <TextBlock Text="День рождения: "/>
+                                    <DatePicker SelectedDate="{Binding Employee.DateOfBirth}"
+                                        IsTodayHighlighted="False"
+                                        HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Vertical" Margin="60 10 60 0">
+                                <TextBlock Text="Адрес: "/>
+                                <TextBox Text="{Binding Employee.Address}"/>
+                            </StackPanel>
+
+                            <Button Content="Добавить" Height="60" Command="{Binding AddNewEmployee}"
+                                        Margin="30"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Услуги"/>
+                </TabItem.Header>
+
+                <TabControl TabStripPlacement="Bottom">
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Таблица"/>
+                        </TabItem.Header>
+
+                        <TabItem.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Удалить" Command="{Binding DeleteService}"/>
+                            </ContextMenu>
+                        </TabItem.ContextMenu>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="11*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Поиск услуги по названию: " VerticalAlignment="Center" Margin="30 10 0 10"/>
+                                <TextBox VerticalAlignment="Center" MinWidth="400" Margin="10 10"
+                                Text="{Binding FindService, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <DataGrid ItemsSource="{Binding AllServices, UpdateSourceTrigger=PropertyChanged}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  SelectedItem="{Binding SelectedService}"
+                                  Grid.Row="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                                    <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="3*"/>
+                                    <DataGridTextColumn Header="Цена" Binding="{Binding Price}" Width="2*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Добавление"/>
+                        </TabItem.Header>
+
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <TextBlock Text="Название: "/>
+                                    <TextBox Text="{Binding Service.Name}" MinWidth="330"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Margin="10">
+                                    <TextBlock Text="Цена: "/>
+                                    <TextBox Text="{Binding Service.Price}" MinWidth="110"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Button Content="Добавить" Height="60" Command="{Binding AddNewService}"
+                                        Margin="30"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
